@@ -16,20 +16,32 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carpool/constant/Config.dart';
-import 'package:carpool/future/signup.dart';
+import 'package:carpool/future/CustomFuture.dart';
+import 'package:carpool/helper/SharedPreferences.dart';
 import 'package:carpool/screens/UserDashBoard.dart';
+import 'package:carpool/utils/Dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 class SignUpPage extends StatefulWidget {
   static final String path = "lib/src/pages/login/auth3.dart";
 
   @override
-  _AuthThreePageState createState() => _AuthThreePageState();
+  SignUpPageState createState() => SignUpPageState();
 }
 
-class _AuthThreePageState extends State<SignUpPage> {
+class SignUpPageState extends State<SignUpPage> {
   bool formVisible;
   int _formsIndex;
+
+  SignUpPageState() {
+    SharedPreferencesHelper().isUserSignedIn().then((value) {
+      if (value) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => UserDashboard()));
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -210,7 +222,9 @@ class _AuthThreePageState extends State<SignUpPage> {
 }
 
 class LoginForm extends StatelessWidget {
-  const LoginForm({
+  String mEmail, mPassword;
+
+  LoginForm({
     Key key,
   }) : super(key: key);
 
@@ -227,6 +241,9 @@ class LoginForm extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
           TextField(
+            onChanged: (value) {
+              getLoginData(value, "email");
+            },
             decoration: InputDecoration(
               hintText: "Enter email",
               border: OutlineInputBorder(),
@@ -234,6 +251,9 @@ class LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 10.0),
           TextField(
+            onChanged: (value) {
+              getLoginData(value, "password");
+            },
             obscureText: true,
             decoration: InputDecoration(
               hintText: "Enter password",
@@ -249,23 +269,46 @@ class LoginForm extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.0),
             ),
             child: Text("Login"),
-            onPressed: () {},
+            onPressed: () {
+              checkSignIn(context);
+            },
           ),
         ],
       ),
     );
   }
+
+  void getLoginData(String value, String type) {
+    switch (type) {
+      case "email":
+        mEmail = value;
+        break;
+      case "password":
+        mPassword = value;
+        break;
+    }
+  }
+
+  void checkSignIn(BuildContext context) async {
+    String response = await CustomFuture().signIn(mEmail, mPassword);
+    print(response);
+    if (response == "found") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => UserDashboard()));
+    } else if (response == "not") {
+      Toast.show("Email and password dose not match", context);
+      DialogUtil().dialogMessage(context, "Email not registered");
+    }
+  }
 }
 
 class SignUpForm extends StatelessWidget {
-  String mEmail, mPassword, mConfirmPassword, mRole = "Select Role";
-  List<String> mRoles = ["Vechicle Owner", "Commuter"];
-  String response = null;
+  String mEmail, mPassword, mConfirmPassword;
+  String response;
+
   SignUpForm({
     Key key,
-  }) : super(key: key){
-
-  }
+  }) : super(key: key) {}
 
   @override
   Widget build(BuildContext context) {
@@ -311,20 +354,6 @@ class SignUpForm extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10.0),
-          DropdownButton(
-            hint: Text(mRole),
-            onChanged: (value) {
-              mRole = value;
-              getInPutText("role", value);
-            },
-            items: mRoles.map((String role) {
-              return DropdownMenuItem<String>(
-                child: Text(role),
-                value: role,
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 10.0),
           RaisedButton(
             color: Colors.red,
             textColor: Colors.white,
@@ -356,13 +385,26 @@ class SignUpForm extends StatelessWidget {
   }
 
   void signUp(BuildContext context) async {
-    String response = await CustomFuture().signup(mEmail, mPassword, mRole);
-    print(response);
-
-    if (response == "SuccessSignup") {
+    if (!RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(mEmail)) {
+      DialogUtil().dialogMessage(context, "Please Enter valid Email");
+    } else if (mPassword != mConfirmPassword) {
+      DialogUtil().dialogMessage(context, "Password should be same..");
+    } else if (mPassword.length < 6) {
+      DialogUtil().dialogMessage(
+          context, "Password should be greater than 6 charactors");
+    } else {
+      String response = await CustomFuture().signup(mEmail, mPassword);
       print(response);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) =>UserDashboard()));
+
+      if (response == "SuccessSignup") {
+        await SharedPreferencesHelper().signInUser(mEmail);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => UserDashboard()));
+      } else if (response == "exist") {
+        DialogUtil().dialogMessage(context, "Email Already Registered");
+      }
     }
   }
 }
