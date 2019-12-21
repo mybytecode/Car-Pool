@@ -293,6 +293,7 @@ class LoginForm extends StatelessWidget {
     String response = await CustomFuture().signIn(mEmail, mPassword);
     print(response);
     if (response == "found") {
+      await SharedPreferencesHelper().signInUser(mEmail);
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => UserDashboard()));
     } else if (response == "not") {

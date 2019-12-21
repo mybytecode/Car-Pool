@@ -1,7 +1,11 @@
+import 'package:carpool/future/CustomFuture.dart';
+import 'package:carpool/helper/SharedPreferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../Model.dart';
 
 class RiderDashBoard extends StatefulWidget {
   @override
@@ -9,7 +13,8 @@ class RiderDashBoard extends StatefulWidget {
 }
 
 class RiderDashboardState extends State<RiderDashBoard> {
-  DateTime dateTime = DateTime.now();
+  DateTime mDateTime = DateTime.now();
+  String mStartLocation, mDropLocation,mNumOfSeatsAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,9 @@ class RiderDashboardState extends State<RiderDashBoard> {
           children: <Widget>[
             const SizedBox(height: 10.0),
             TextField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                getTextFieldData(value, "start_location");
+              },
               decoration: InputDecoration(
                 hintText: "Start location",
                 prefixIcon: Icon(
@@ -35,7 +42,9 @@ class RiderDashboardState extends State<RiderDashBoard> {
             const SizedBox(height: 10.0),
             Container(
               child: TextField(
-                onChanged: (value) {},
+                onChanged: (value) {
+                  getTextFieldData(value, "drop_location");
+                },
                 decoration: InputDecoration(
                   hintText: "Drop location",
                   prefixIcon: Icon(
@@ -48,7 +57,9 @@ class RiderDashboardState extends State<RiderDashBoard> {
             ),
             const SizedBox(height: 10.0),
             TextField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                getTextFieldData(value, "num_of_seats");
+              },
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: "Number of Seats Available",
@@ -66,15 +77,18 @@ class RiderDashboardState extends State<RiderDashBoard> {
                 DatePicker.showDateTimePicker(context,
                     theme: DatePickerTheme(containerHeight: 200.0),
                     showTitleActions: true,
-                    currentTime: dateTime, onConfirm: (date) {
-                  if (date.difference(dateTime).inMilliseconds < 0) {
+                    currentTime: mDateTime, onConfirm: (date) {
+                  print(date.difference(mDateTime).inMilliseconds);
+                  if (date.difference(mDateTime).inMilliseconds < 0) {
                     setState(() {
-                      dateTime = DateTime.now();
+                      mDateTime = DateTime.now();
                     });
-                    print(dateTime);
                   } else {
-                    dateTime = DateTime.now();
+                    setState(() {
+                      mDateTime = date;
+                    });
                   }
+//                  print(dateTime);
                 });
               },
               child: Row(
@@ -85,15 +99,15 @@ class RiderDashboardState extends State<RiderDashBoard> {
                   ),
                   Container(
                       padding: EdgeInsets.only(left: 10),
-                      child: Text(dateTime.day.toString() +
+                      child: Text(mDateTime.day.toString() +
                           "-" +
-                          dateTime.month.toString() +
+                          mDateTime.month.toString() +
                           "-" +
-                          dateTime.year.toString() +
+                          mDateTime.year.toString() +
                           "  " +
-                          dateTime.hour.toString() +
+                          mDateTime.hour.toString() +
                           ":" +
-                          dateTime.minute.toString()))
+                          mDateTime.minute.toString()))
                 ],
               ),
               shape: RoundedRectangleBorder(
@@ -102,7 +116,9 @@ class RiderDashboardState extends State<RiderDashBoard> {
             ),
             const SizedBox(height: 20),
             RaisedButton(
-                onPressed: () {},
+                onPressed: () {
+                  postRide();
+                },
                 color: Colors.pink,
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -121,5 +137,32 @@ class RiderDashboardState extends State<RiderDashBoard> {
         ),
       ),
     );
+  }
+
+  getTextFieldData(String value, String type) {
+    switch (type) {
+      case "start_location":
+        mStartLocation = value;
+        break;
+      case "drop_location":
+        mDropLocation = value;
+        break;
+      case "num_of_seats":
+        mNumOfSeatsAvailable = value;
+        break;
+    }
+  }
+
+  postRide() async {
+
+    String response = await CustomFuture().postRide(mStartLocation,
+        mDropLocation, mNumOfSeatsAvailable, mDateTime.toString());
+    print(response);
+
+    if( response == "success" )
+      {
+        List<Ride> response = await CustomFuture().getRidesOfUser();
+        print(response);
+      }
   }
 }

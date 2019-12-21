@@ -25,7 +25,7 @@ class CommuterDashboardState extends State< CommuterDashBoard>
   Widget build(BuildContext context) {
     getCurrentLocation();
     return  Container(child: GoogleMap(
-      mapType: MapType.hybrid,
+      mapType: MapType.satellite,
       trafficEnabled: true,
       scrollGesturesEnabled: true,
       zoomGesturesEnabled: true,
@@ -34,7 +34,7 @@ class CommuterDashboardState extends State< CommuterDashBoard>
       onMapCreated: _onMapCreated,
       initialCameraPosition: CameraPosition(
         tilt: 20.0,
-        zoom: 30.0,
+        zoom: 20.0,
         target: _center,
       ),
     ),);

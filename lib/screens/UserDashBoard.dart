@@ -18,37 +18,34 @@ class UserDashboardState extends State<UserDashboard> {
         home: DefaultTabController(
           child: Material(
             child: Scaffold(
-              appBar: AppBar(
-                elevation: 2,
-                bottom: TabBar(
-                  indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.black12),
-                  tabs: <Widget>[
-                    Tab(
-                      //icon: Icon(FontAwesomeIcons.carAlt),
-                      text: "Rider",
-                    ),
-                    Tab(
-                      //icon: Icon(FontAwesomeIcons.userAlt),
-                      text: "Commuter",
-                    )
-                  ],
+                appBar: AppBar(
+                  elevation: 2,
+                  bottom: TabBar(
+                    indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.black12),
+                    tabs: <Widget>[
+                      Tab(
+                        //icon: Icon(FontAwesomeIcons.carAlt),
+                        text: "Rider",
+                      ),
+                      Tab(
+                        //icon: Icon(FontAwesomeIcons.userAlt),
+                        text: "Commuter",
+                      )
+                    ],
+                  ),
+                  leading: IconButton(
+                    icon: Icon(FontAwesomeIcons.bars),
+                    onPressed: () {},
+                  ),
+                  title: Text("RideAlong"),
                 ),
-                leading: IconButton(
-                  icon: Icon(FontAwesomeIcons.bars),
-                  onPressed: () {},
-                ),
-                title: Text("RideAlong"),
-              ),
-              body: TabBarView(children: <Widget>[
-                RiderDashBoard(),
-                CommuterDashBoard()
-              ],)
-            ),
+                body: TabBarView(
+                  children: <Widget>[RiderDashBoard(), CommuterDashBoard()],
+                )),
           ),
           length: 2,
-
         ));
   }
 }
