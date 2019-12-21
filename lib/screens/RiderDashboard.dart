@@ -47,6 +47,19 @@ class RiderDashboardState extends State<RiderDashBoard> {
               ),
             ),
             const SizedBox(height: 10.0),
+            TextField(
+              onChanged: (value) {},
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: "Number of Seats Available",
+                prefixIcon: Icon(
+                  Icons.people,
+                  color: Colors.black54,
+                ),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10.0),
             RaisedButton(
               padding: EdgeInsets.all(10),
               onPressed: () {
