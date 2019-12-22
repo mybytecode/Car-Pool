@@ -37,7 +37,9 @@ class UserDashboardState extends State<UserDashboard> {
                   ),
                   leading: IconButton(
                     icon: Icon(FontAwesomeIcons.bars),
-                    onPressed: () {},
+                    onPressed: () {
+                      showProfile();
+                    },
                   ),
                   title: Text("RideAlong"),
                 ),
@@ -47,5 +49,88 @@ class UserDashboardState extends State<UserDashboard> {
           ),
           length: 2,
         ));
+  }
+
+  Widget showProfile() {
+    showModalBottomSheet(
+      elevation: 5,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        context: context,
+        builder: (BuildContext buildC) {
+          return ListView(
+            padding: EdgeInsets.all(10),
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(top: 50),
+                child: Center(
+                  child: Image.network(
+                      "https://gifimage.net/wp-content/uploads/2018/11/user-gif-4.gif"),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: Center(
+                  child: Text(
+                    "Akshay Galande",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: Center(
+                  child: Text(
+                    "mybytecode@gmail.com",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Container(
+                child: Center(
+                  child: Text(
+                    "Vechicle No:- MH 42 AL 8714",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Container(
+                child: Center(
+                  child: Text(
+                    "Age : 21",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Container(
+                child: Center(
+                  child: Text(
+                    "Gender : Male",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
   }
 }

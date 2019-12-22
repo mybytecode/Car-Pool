@@ -1,11 +1,11 @@
 import 'package:carpool/future/CustomFuture.dart';
-import 'package:carpool/helper/SharedPreferences.dart';
+import 'package:carpool/screens/showrides.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../Model.dart';
+import '../Model/Model.dart';
 
 class RiderDashBoard extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class RiderDashBoard extends StatefulWidget {
 
 class RiderDashboardState extends State<RiderDashBoard> {
   DateTime mDateTime = DateTime.now();
-  String mStartLocation, mDropLocation,mNumOfSeatsAvailable;
+  String mStartLocation, mDropLocation, mNumOfSeatsAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +117,7 @@ class RiderDashboardState extends State<RiderDashBoard> {
             const SizedBox(height: 20),
             RaisedButton(
                 onPressed: () {
-                  postRide();
+                  postRide(context);
                 },
                 color: Colors.pink,
                 textColor: Colors.white,
@@ -129,6 +129,25 @@ class RiderDashboardState extends State<RiderDashBoard> {
                   child: Center(
                     child: Text(
                       "Post a Ride..",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                )),
+            const SizedBox(height: 20,),
+            RaisedButton(
+                onPressed: () {
+                  viewAll();
+                },
+                color: Colors.pink,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                elevation: 4,
+                padding: EdgeInsets.all(10),
+                child: Center(
+                  child: Center(
+                    child: Text(
+                      "View my history",
                       style: TextStyle(fontSize: 24),
                     ),
                   ),
@@ -153,16 +172,23 @@ class RiderDashboardState extends State<RiderDashBoard> {
     }
   }
 
-  postRide() async {
+  void viewAll()async
+  {
+    List<Ride> response = await CustomFuture().getRidesOfUser();
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ShowRides(response)));
+  }
+  postRide(BuildContext context) async {
 
     String response = await CustomFuture().postRide(mStartLocation,
         mDropLocation, mNumOfSeatsAvailable, mDateTime.toString());
+
     print(response);
 
-    if( response == "success" )
-      {
-        List<Ride> response = await CustomFuture().getRidesOfUser();
-        print(response);
-      }
+    if (response == "success") {
+      List<Ride> response = await CustomFuture().getRidesOfUser();
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ShowRides(response)));
+    }
   }
 }

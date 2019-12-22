@@ -32,3 +32,20 @@ class Ride {
         datetime: parsedJson['datetime'] as String);
   }
 }
+
+class Request
+{
+  final String id,ride_id,mail,status;
+
+  Request({this.id, this.ride_id, this.mail, this.status});
+
+  factory Request.fromJson(Map<String,dynamic>json){
+    return Request(
+      id:json['id'] as String,
+      ride_id: json['ride_id'] as String,
+      mail: json['mail'] as String,
+      status: json['status']
+    );
+  }
+
+}
